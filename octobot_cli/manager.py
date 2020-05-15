@@ -20,13 +20,13 @@ import octobot_cli.octobot_docker as octobot_docker
 
 def install_octobot(args):
     if args.docker:
-        octobot_docker.install()
+        octobot_docker.install(use_arm_image=args.arm)
         return
     octobot_pip.install()
 
 
 def update_octobot(args):
     if args.docker:
-        octobot_docker.update()
+        octobot_docker.update(use_arm_image=args.arm)
         return
     octobot_pip.update()

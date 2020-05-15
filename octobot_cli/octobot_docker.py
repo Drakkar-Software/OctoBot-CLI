@@ -13,10 +13,15 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import os
+
 from octobot_commons.logging.logging_util import get_logger
 
-from octobot_cli import OCTOBOT_IMAGE, OCTOBOT_CONTAINER_NAME, OCTOBOT_LATEST_TAG
+from octobot_cli import OCTOBOT_IMAGE, OCTOBOT_CONTAINER_NAME, CONTAINER_DEFAULT_PUBLISH_PORT, \
+    OCTOBOT_STABLE_TAG, OCTOBOT_PI_IMAGE
 import docker
+
+from octobot_cli.util import get_current_directory
 
 
 def _get_client():
@@ -56,11 +61,27 @@ def _pull_octobot_image(complete_image):
 
 def _run_octobot_container(complete_image, container_name=OCTOBOT_CONTAINER_NAME):
     get_logger().info("Creating OctoBot container...")
-    _get_client().containers.run(complete_image, name=container_name, detach=True)
+    _get_client().containers.run(complete_image,
+                                 name=container_name,
+                                 ports={f"{CONTAINER_DEFAULT_PUBLISH_PORT}/tcp": CONTAINER_DEFAULT_PUBLISH_PORT},
+                                 detach=True,
+                                 volumes={
+                                     os.path.join(get_current_directory(), "user"):
+                                         {'bind': '/bot/octobot/user', 'mode': 'rw'},
+                                     os.path.join(get_current_directory(), "logs"):
+                                         {'bind': '/bot/octobot/logs', 'mode': 'rw'},
+                                     os.path.join(get_current_directory(), "tentacles"):
+                                         {'bind': '/bot/octobot/tentacles', 'mode': 'rw'}
+                                 })
 
 
-def update(image_name=OCTOBOT_IMAGE, image_tag=OCTOBOT_LATEST_TAG, container_name=OCTOBOT_CONTAINER_NAME):
+def update(image_name=OCTOBOT_IMAGE,
+           image_tag=OCTOBOT_STABLE_TAG,
+           container_name=OCTOBOT_CONTAINER_NAME,
+           use_arm_image=False):
     if _is_docker_available() and _is_container_running(container_name=container_name):
+        if use_arm_image:
+            image_name = OCTOBOT_PI_IMAGE
         get_logger().info("Stopping OctoBot container...")
         _get_running_container(container_name=container_name).stop()
         _get_running_container(container_name=container_name).remove()
@@ -71,8 +92,13 @@ def update(image_name=OCTOBOT_IMAGE, image_tag=OCTOBOT_LATEST_TAG, container_nam
         get_logger().error("Docker container not found")
 
 
-def install(image_name=OCTOBOT_IMAGE, image_tag=OCTOBOT_LATEST_TAG, container_name=OCTOBOT_CONTAINER_NAME):
+def install(image_name=OCTOBOT_IMAGE,
+            image_tag=OCTOBOT_STABLE_TAG,
+            container_name=OCTOBOT_CONTAINER_NAME,
+            use_arm_image=False):
     if _is_docker_available() and not _is_container_running(container_name=container_name):
+        if use_arm_image:
+            image_name = OCTOBOT_PI_IMAGE
         _pull_octobot_image(_get_complete_image(image_name, image_tag))
         _run_octobot_container(_get_complete_image(image_name, image_tag),
                                container_name=container_name)

@@ -70,6 +70,8 @@ def install_cli(octobot_management_parser):
                                            action='store_true')
     octobot_management_parser.add_argument('-p', '--python', help='Install OctoBot with python.',
                                            action='store_true')
+    octobot_management_parser.add_argument('-r', '--arm', help='Use arm docker image (for raspberry).',
+                                           action='store_true')
     octobot_management_parser.add_argument('-vv', '--verbose', help='Activate verbose mode.',
                                            action='store_true')
 
@@ -78,6 +80,8 @@ def update_cli(octobot_management_parser):
     octobot_management_parser.add_argument('-d', '--docker', help='Update OctoBot docker installation.',
                                            action='store_true')
     octobot_management_parser.add_argument('-p', '--python', help='Update OctoBot python installation.',
+                                           action='store_true')
+    octobot_management_parser.add_argument('-r', '--arm', help='Use arm docker image (for raspberry).',
                                            action='store_true')
     octobot_management_parser.add_argument('-vv', '--verbose', help='Activate verbose mode.',
                                            action='store_true')

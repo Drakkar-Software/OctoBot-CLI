@@ -25,4 +25,6 @@ OCTOBOT_IMAGE = "drakkarsoftware/octobot"
 OCTOBOT_PI_IMAGE = "drakkarsoftware/octobot-pi"
 OCTOBOT_CONTAINER_NAME = "octobot"
 OCTOBOT_LATEST_TAG = "latest"
-OCTOBOT_STABLE_TAG = "beta"  # TODO change it
+OCTOBOT_STABLE_TAG = "0.4.0"  # TODO change it
+
+CONTAINER_DEFAULT_PUBLISH_PORT = 5001
