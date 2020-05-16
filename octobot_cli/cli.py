@@ -14,16 +14,27 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import argparse
-from logging import INFO
-
-from octobot_commons.logging.logging_util import set_global_logger_level
-
+from logging import INFO, getLogger, StreamHandler, Formatter
 from octobot_cli.manager import install_octobot, update_octobot
 from octobot_cli.octobot_cli import manage_cli
 
 
+def _prepare_logger():
+    logger = getLogger("Anonymous")
+    logger.setLevel(INFO)
+    # create console handler and set level to info
+    ch = StreamHandler()
+    ch.setLevel(INFO)
+    # create formatter
+    formatter = Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    # add formatter to ch
+    ch.setFormatter(formatter)
+    # add ch to logger
+    logger.addHandler(ch)
+
+
 def cli(args):
-    set_global_logger_level(INFO)
+    _prepare_logger()
 
     parser = argparse.ArgumentParser(description='OctoBot-CLI')
     parser.add_argument('-v', '--version', help='Show OctoBot-CLI current version.',
