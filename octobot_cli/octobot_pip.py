@@ -14,8 +14,8 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import os
-
 import venv
+from octobot_commons.logging.logging_util import get_logger
 
 from octobot_cli import OCTOBOT_PACKAGE, DEFAULT_VENV_PATH
 from octobot_cli.util import run_command, get_current_directory
@@ -30,8 +30,14 @@ def _create_venv(venv_path):
     run_command(["virtualenv", venv_path])
 
 
+def get_python_bin():
+    if os.name == "nt":
+        return ["Scripts", "python.exe"]
+    return ["bin", "python"]
+
+
 def _get_python_path(venv_path):
-    return os.path.join(get_current_directory(), venv_path, "bin", "python")
+    return os.path.join(get_current_directory(), venv_path, *get_python_bin())
 
 
 def _get_python_pip_path(venv_path):
@@ -39,8 +45,12 @@ def _get_python_pip_path(venv_path):
 
 
 def create_venv_if_necessary(venv_path):
+    venv_abs_path = os.path.abspath(venv_path)
     if not _is_venv_installed(venv_path=venv_path):
+        get_logger().info(f"Creating a virtual env in {venv_abs_path}")
         _create_venv(venv_path=venv_path)
+    else:
+        get_logger().info(f"Using virtual env in {venv_abs_path}")
 
 
 def _get_update_args(package_name=OCTOBOT_PACKAGE):
@@ -72,4 +82,6 @@ def install(package_name=OCTOBOT_PACKAGE,
 def run_pip_command(pip_command_args,
                     venv_path,
                     verbose=False):
+    get_logger().info(f"Calling pip from virtual env in '{venv_path}' "
+                                        f"with arguments: {pip_command_args}")
     return run_command(_get_python_pip_path(venv_path=venv_path) + pip_command_args, verbose=verbose)

@@ -20,8 +20,12 @@ import sys
 from octobot_commons.logging.logging_util import get_logger
 
 
+COMMAND_LOGGER = "Command runner"
+
+
 def run_command(command_args: list, verbose=False, with_call=True, with_popen=False):
     try:
+        get_logger().info(f"Running commande with: {command_args}")
         if with_call:
             return subprocess.call(command_args, stderr=sys.stdout.buffer)
         if with_popen:
