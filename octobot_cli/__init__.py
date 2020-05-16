@@ -17,7 +17,7 @@
 PROJECT_NAME = "OctoBot-CLI"
 VERSION = "1.0.0"  # major.minor.revision
 
-OCTOBOT_PACKAGE = "OctoBot"
+OCTOBOT_PACKAGE = "OctoBot >= 0.4.0a9"
 
 DEFAULT_VENV_PATH = "venv"
 
