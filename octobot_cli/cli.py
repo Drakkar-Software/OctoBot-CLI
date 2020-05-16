@@ -14,7 +14,22 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import argparse
-from logging import INFO, getLogger, StreamHandler, Formatter
+from logging import INFO
+from logging import getLogger, StreamHandler, Formatter
+
+import sys
+
+MIN_PYTHON_VERSION = (3, 7)
+
+# check python version
+current_version = sys.version_info
+if not current_version >= MIN_PYTHON_VERSION:
+    print("OctoBot requires a Python version to be higher or equal to Python " + str(MIN_PYTHON_VERSION[0])
+          + "." + str(MIN_PYTHON_VERSION[1]) + " current Python version is " + str(current_version[0])
+          + "." + str(current_version[1]) + "\n"
+          + "You can download Python last versions on: https://www.python.org/downloads/")
+    sys.exit(-1)
+
 from octobot_cli.manager import install_octobot, update_octobot
 from octobot_cli.octobot_cli import manage_cli
 
@@ -59,17 +74,27 @@ def cli(args):
     update_cli(update_parser)
     update_parser.set_defaults(func=update_octobot)
 
-    # # start
-    # start_parser = octobot_management_parser.add_parser("start", help='')
-    # start_cli(start_parser)
-    # start_parser.set_defaults(func=start_octobot)
-    #
-    # # tentacles manager
-    # tentacles_parser = octobot_management_parser.add_parser("tentacles", help='Calls OctoBot tentacles manager.\n'
-    #                                                                           'Use "tentacles --help" to get the '
-    #                                                                           'tentacles manager help.')
-    # register_tentacles_manager_arguments(tentacles_parser)
-    # tentacles_parser.set_defaults(func=call_tentacles_manager)
+    # start
+    try:
+        from octobot.cli import octobot_parser, start_octobot
+        start_parser = octobot_management_parser.add_parser("start", help='')
+        octobot_parser(start_parser)
+        start_parser.set_defaults(func=start_octobot)
+    except ImportError:
+        pass
+
+    # tentacles manager
+    try:
+        from octobot_tentacles_manager.api.loader import load_tentacles
+        from octobot_tentacles_manager.cli import register_tentacles_manager_arguments
+        from octobot.commands import call_tentacles_manager
+        tentacles_parser = octobot_management_parser.add_parser("tentacles", help='Calls OctoBot tentacles manager.\n'
+                                                                                  'Use "tentacles --help" to get the '
+                                                                                  'tentacles manager help.')
+        register_tentacles_manager_arguments(tentacles_parser)
+        tentacles_parser.set_defaults(func=call_tentacles_manager)
+    except ImportError:
+        pass
 
     args = parser.parse_args(args)
     # call the appropriate command entry point
@@ -98,11 +123,3 @@ def update_cli(octobot_management_parser):
                                            action='store_true')
     octobot_management_parser.add_argument('-v', '--version', help='Show OctoBot current version.',
                                            action='store_true')
-
-
-def start_cli(octobot_management_parser):
-    pass
-
-
-def tentacles_cli(octobot_management_parser):
-    pass
