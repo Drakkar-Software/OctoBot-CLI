@@ -14,13 +14,11 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import os
-
-from octobot_commons.logging.logging_util import get_logger
-
-from octobot_cli import OCTOBOT_IMAGE, OCTOBOT_CONTAINER_NAME, CONTAINER_DEFAULT_PUBLISH_PORT, \
-    OCTOBOT_STABLE_TAG, OCTOBOT_PI_IMAGE
 import docker
 
+from octobot_commons.logging.logging_util import get_logger
+from octobot_cli import OCTOBOT_IMAGE, OCTOBOT_CONTAINER_NAME, CONTAINER_DEFAULT_PUBLISH_PORT, \
+    OCTOBOT_STABLE_TAG, OCTOBOT_PI_IMAGE
 from octobot_cli.util import get_current_directory
 
 
@@ -59,9 +57,10 @@ def _pull_octobot_image(complete_image):
     _get_client().images.pull(complete_image)
 
 
-def _run_octobot_container(complete_image, container_name=OCTOBOT_CONTAINER_NAME):
+def _run_octobot_container(complete_image, container_name=OCTOBOT_CONTAINER_NAME, args=None):
     get_logger().info("Creating OctoBot container...")
     _get_client().containers.run(complete_image,
+                                 command=args,
                                  name=container_name,
                                  ports={f"{CONTAINER_DEFAULT_PUBLISH_PORT}/tcp": CONTAINER_DEFAULT_PUBLISH_PORT},
                                  detach=True,
@@ -104,3 +103,18 @@ def install(image_name=OCTOBOT_IMAGE,
                                container_name=container_name)
     else:
         get_logger().error("Docker container already exists")
+
+
+def start_octobot(args: list,
+                  image_name=OCTOBOT_IMAGE,
+                  image_tag=OCTOBOT_STABLE_TAG,
+                  container_name=OCTOBOT_CONTAINER_NAME,
+                  use_arm_image=False):
+    if _is_docker_available() and not _is_container_running(container_name=container_name):
+        if use_arm_image:
+            image_name = OCTOBOT_PI_IMAGE
+        return _run_octobot_container(_get_complete_image(image_name, image_tag),
+                                      container_name=container_name,
+                                      args=args)
+    else:
+        get_logger().error("Docker container not found")

@@ -109,3 +109,9 @@ venv.bak/
 user
 cython_debug
 wheelhouse
+
+# Octobot
+config
+tentacles
+logs
+backtesting

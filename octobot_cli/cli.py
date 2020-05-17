@@ -30,7 +30,7 @@ if not current_version >= MIN_PYTHON_VERSION:
           + "You can download Python last versions on: https://www.python.org/downloads/")
     sys.exit(-1)
 
-from octobot_cli.manager import install_octobot, update_octobot
+from octobot_cli.manager import install_octobot, update_octobot, start_octobot
 from octobot_cli.octobot_cli import manage_cli
 
 
@@ -65,23 +65,19 @@ def cli(args):
     octobot_management_parser = parser.add_subparsers(title="OctoBot Management")
 
     # install
-    install_parser = octobot_management_parser.add_parser("install", help='')
+    install_parser = octobot_management_parser.add_parser("install", help='Install Octobot')
     install_cli(install_parser)
     install_parser.set_defaults(func=install_octobot)
 
     # update
-    update_parser = octobot_management_parser.add_parser("update", help='')
+    update_parser = octobot_management_parser.add_parser("update", help='Update the installed Octobot')
     update_cli(update_parser)
     update_parser.set_defaults(func=update_octobot)
 
     # start
-    try:
-        from octobot.cli import octobot_parser, start_octobot
-        start_parser = octobot_management_parser.add_parser("start", help='')
-        octobot_parser(start_parser)
-        start_parser.set_defaults(func=start_octobot)
-    except ImportError:
-        pass
+    start_parser = octobot_management_parser.add_parser("start", help='Start the installed OctoBot')
+    start_cli(start_parser)
+    start_parser.set_defaults(func=start_octobot)
 
     # tentacles manager
     try:
@@ -96,9 +92,9 @@ def cli(args):
     except ImportError:
         pass
 
-    args = parser.parse_args(args)
+    args, octobot_args = parser.parse_known_args(args)
     # call the appropriate command entry point
-    args.func(args)
+    args.func(args, octobot_args)
 
 
 def install_cli(octobot_management_parser):
@@ -122,4 +118,12 @@ def update_cli(octobot_management_parser):
     octobot_management_parser.add_argument('-vv', '--verbose', help='Activate verbose mode.',
                                            action='store_true')
     octobot_management_parser.add_argument('-v', '--version', help='Show OctoBot current version.',
+                                           action='store_true')
+
+
+def start_cli(octobot_management_parser):
+    # use only arguments full names not to interfere with OctoBot's arguments
+    octobot_management_parser.add_argument('--docker', help='Start OctoBot with docker.',
+                                           action='store_true')
+    octobot_management_parser.add_argument('--python', help='Start OctoBot with python.',
                                            action='store_true')
