@@ -30,14 +30,18 @@ def _create_venv(venv_path):
     run_command(["virtualenv", venv_path])
 
 
-def get_python_bin():
+def get_bin(name):
     if os.name == "nt":
-        return ["Scripts", "python.exe"]
-    return ["bin", "python"]
+        return ["Scripts", f"{name}.exe"]
+    return ["bin", name]
 
 
 def _get_python_path(venv_path):
-    return os.path.join(get_current_directory(), venv_path, *get_python_bin())
+    return os.path.join(get_current_directory(), venv_path, *get_bin("python"))
+
+
+def _get_octobot_path(venv_path):
+    return os.path.join(get_current_directory(), venv_path, *get_bin("OctoBot"))
 
 
 def _get_python_pip_path(venv_path):
@@ -79,9 +83,15 @@ def install(package_name=OCTOBOT_PACKAGE,
                            verbose=verbose)
 
 
+def start_octobot(args: list,
+                  venv_path=DEFAULT_VENV_PATH,
+                  verbose=False):
+    return run_command([_get_octobot_path(venv_path=venv_path)] + args, verbose=verbose)
+
+
 def run_pip_command(pip_command_args,
                     venv_path,
                     verbose=False):
-    get_logger().info(f"Calling pip from virtual env in '{venv_path}' "
-                                        f"with arguments: {pip_command_args}")
+    if verbose:
+        get_logger().info(f"Calling pip from virtual env in '{venv_path}' with arguments: {pip_command_args}")
     return run_command(_get_python_pip_path(venv_path=venv_path) + pip_command_args, verbose=verbose)
