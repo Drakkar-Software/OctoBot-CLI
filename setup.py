@@ -41,9 +41,11 @@ setup(
     data_files=[],
     install_requires=REQUIRED,
     python_requires=REQUIRES_PYTHON,
-    entry_points=[
-        'octobot_cli = octobot_cli.cli:cli'
-    ],
+    entry_points={
+        'console_scripts': [
+            'octobot_cli = octobot_cli.cli:cli'
+        ]
+    },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Operating System :: OS Independent',
