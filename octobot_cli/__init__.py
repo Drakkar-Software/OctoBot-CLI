@@ -15,7 +15,7 @@
 #  License along with this library.
 
 PROJECT_NAME = "OctoBot-CLI"
-VERSION = "1.0.0"  # major.minor.revision
+VERSION = "1.0.1"  # major.minor.revision
 
 OCTOBOT_PACKAGE = "OctoBot >= 0.4.0a9"
 

@@ -14,10 +14,9 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 # from distutils.extension import Extension
-import os
 
 from setuptools import find_packages
-from setuptools import setup, Extension
+from setuptools import setup
 
 from octobot_cli import PROJECT_NAME, VERSION
 
