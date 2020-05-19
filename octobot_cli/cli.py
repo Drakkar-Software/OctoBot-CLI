@@ -48,7 +48,9 @@ def _prepare_logger():
     logger.addHandler(ch)
 
 
-def cli(args):
+def cli(args=None):
+    if not args:
+        args = sys.argv[1:]
     _prepare_logger()
 
     parser = argparse.ArgumentParser(description='OctoBot-CLI')
