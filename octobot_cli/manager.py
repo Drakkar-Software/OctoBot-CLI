@@ -13,7 +13,6 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
 import octobot_cli.octobot_pip as octobot_pip
 import octobot_cli.octobot_docker as octobot_docker
 
@@ -28,8 +27,12 @@ def install_octobot(args, _):
 def update_octobot(args, _):
     if args.docker:
         octobot_docker.update(use_arm_image=args.arm)
+        if not args.no_tentacles:
+            octobot_docker.install_tentacles(use_arm_image=args.arm)
         return
     octobot_pip.update(verbose=args.verbose)
+    if not args.no_tentacles:
+        octobot_pip.install_tentacles()
 
 
 def start_octobot(args, octobot_args):

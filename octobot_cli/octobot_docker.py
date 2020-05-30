@@ -19,7 +19,7 @@ import docker
 from octobot_commons.logging.logging_util import get_logger
 from octobot_cli import OCTOBOT_IMAGE, OCTOBOT_CONTAINER_NAME, CONTAINER_DEFAULT_PUBLISH_PORT, \
     OCTOBOT_STABLE_TAG, OCTOBOT_PI_IMAGE
-from octobot_cli.util import get_current_directory
+from octobot_cli.util import get_current_directory, get_tentacles_manager_args
 
 
 def _get_client():
@@ -105,12 +105,12 @@ def install(image_name=OCTOBOT_IMAGE,
         get_logger().error("Docker container already exists")
 
 
-def start_octobot(args: list,
-                  image_name=OCTOBOT_IMAGE,
-                  image_tag=OCTOBOT_STABLE_TAG,
-                  container_name=OCTOBOT_CONTAINER_NAME,
-                  use_arm_image=False):
-    if _is_docker_available() and not _is_container_running(container_name=container_name):
+def _run_on_octobot_container(args: list,
+                              image_name=OCTOBOT_IMAGE,
+                              image_tag=OCTOBOT_STABLE_TAG,
+                              container_name=OCTOBOT_CONTAINER_NAME,
+                              use_arm_image=False):
+    if _is_docker_available() and _is_container_running(container_name=container_name):
         if use_arm_image:
             image_name = OCTOBOT_PI_IMAGE
         return _run_octobot_container(_get_complete_image(image_name, image_tag),
@@ -118,3 +118,28 @@ def start_octobot(args: list,
                                       args=args)
     else:
         get_logger().error("Docker container not found")
+
+
+def install_tentacles(image_name=OCTOBOT_IMAGE,
+                      image_tag=OCTOBOT_STABLE_TAG,
+                      container_name=OCTOBOT_CONTAINER_NAME,
+                      use_arm_image=False):
+    _run_on_octobot_container(
+        args=get_tentacles_manager_args("--install", "--all"),
+        image_name=image_name,
+        image_tag=image_tag,
+        container_name=container_name,
+        use_arm_image=use_arm_image)
+
+
+def start_octobot(args: list,
+                  image_name=OCTOBOT_IMAGE,
+                  image_tag=OCTOBOT_STABLE_TAG,
+                  container_name=OCTOBOT_CONTAINER_NAME,
+                  use_arm_image=False):
+    _run_on_octobot_container(
+        args=args,
+        image_name=image_name,
+        image_tag=image_tag,
+        container_name=container_name,
+        use_arm_image=use_arm_image)

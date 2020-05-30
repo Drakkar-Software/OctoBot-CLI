@@ -117,6 +117,8 @@ def update_cli(octobot_management_parser):
                                            action='store_true')
     octobot_management_parser.add_argument('-r', '--arm', help='Use arm docker image (for raspberry).',
                                            action='store_true')
+    octobot_management_parser.add_argument('-nt', '--no-tentacles', help='Skip tentacles installation.',
+                                           action='store_true')
     octobot_management_parser.add_argument('-vv', '--verbose', help='Activate verbose mode.',
                                            action='store_true')
     octobot_management_parser.add_argument('-v', '--version', help='Show OctoBot current version.',
