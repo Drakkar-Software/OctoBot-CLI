@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import argparse
+from copy import copy
 from logging import INFO
 from logging import getLogger, StreamHandler, Formatter
 
@@ -77,7 +78,8 @@ def cli(args=None):
     update_parser.set_defaults(func=update_octobot)
 
     # start
-    start_parser = octobot_management_parser.add_parser("start", help='Start the installed OctoBot')
+    start_parser = octobot_management_parser.add_parser("start", help='Start the installed OctoBot, any '
+                                                                      'argument after this will be given to OctoBot')
     start_cli(start_parser)
     start_parser.set_defaults(func=start_octobot)
 
@@ -94,9 +96,25 @@ def cli(args=None):
     except ImportError:
         pass
 
-    args, octobot_args = parser.parse_known_args(args)
+    to_process_args = copy(args)
+    parsers_handling_special_args = ["start", "tentacles"]
+    special_args = ["-h", "--help"]
+    to_restore_args = []
+    # remove special args from default parser to avoid parsing collisions
+    if any(parser_handling_special_args in to_process_args
+           for parser_handling_special_args in parsers_handling_special_args):
+        for special_arg in special_args:
+            if special_arg in to_process_args:
+                to_process_args.remove(special_arg)
+                to_restore_args.append(special_arg)
+    args, octobot_args = parser.parse_known_args(to_process_args)
     # call the appropriate command entry point
-    args.func(args, octobot_args)
+    try:
+        # call with restored special args if any
+        args.func(args, octobot_args + to_restore_args)
+    except TypeError:
+        # used in tentacles_parser
+        args.func(args)
 
 
 def install_cli(octobot_management_parser):
