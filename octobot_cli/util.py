@@ -40,3 +40,7 @@ def run_command(command_args: list, verbose=False, with_call=True, with_popen=Fa
 
 def get_current_directory():
     return os.path.abspath(os.getcwd())
+
+
+def get_tentacles_manager_args(*options):
+    return ["tentacles"] + list(options)

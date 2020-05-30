@@ -18,7 +18,7 @@ import venv
 from octobot_commons.logging.logging_util import get_logger
 
 from octobot_cli import OCTOBOT_PACKAGE, DEFAULT_VENV_PATH
-from octobot_cli.util import run_command, get_current_directory
+from octobot_cli.util import run_command, get_current_directory, get_tentacles_manager_args
 
 
 def _is_venv_installed(venv_path):
@@ -87,6 +87,13 @@ def start_octobot(args: list,
                   venv_path=DEFAULT_VENV_PATH,
                   verbose=False):
     return run_command([_get_octobot_path(venv_path=venv_path)] + args, verbose=verbose)
+
+
+def install_tentacles(venv_path=DEFAULT_VENV_PATH,
+                      verbose=False):
+    return run_command(
+        [_get_octobot_path(venv_path=venv_path)] + get_tentacles_manager_args("--install", "--all"),
+        verbose=verbose)
 
 
 def run_pip_command(pip_command_args,
