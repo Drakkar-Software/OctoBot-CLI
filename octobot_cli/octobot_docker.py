@@ -14,6 +14,9 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import os
+import webbrowser
+import socket
+
 import docker
 
 from octobot_commons.logging.logging_util import get_logger
@@ -72,6 +75,15 @@ def _run_octobot_container(complete_image, container_name=OCTOBOT_CONTAINER_NAME
                                      os.path.join(get_current_directory(), "tentacles"):
                                          {'bind': '/bot/octobot/tentacles', 'mode': 'rw'}
                                  })
+    _open_web_interface_on_browser(port=CONTAINER_DEFAULT_PUBLISH_PORT)
+
+
+def _open_web_interface_on_browser(port):
+    try:
+        get_logger().info("Opening OctoBot web interface...")
+        webbrowser.open(f"http://{socket.gethostbyname(socket.gethostname())}:{port}")
+    except Exception as e:
+        get_logger().warning(f"Impossible to open automatically web interface: {e}")
 
 
 def update(image_name=OCTOBOT_IMAGE,
