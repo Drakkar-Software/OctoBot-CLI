@@ -57,12 +57,16 @@ def create_venv_if_necessary(venv_path):
         get_logger().info(f"Using virtual env in {venv_abs_path}")
 
 
-def _get_update_args(package_name=OCTOBOT_PACKAGE):
-    return _get_install_args(package_name=package_name) + ["-U", package_name]
+def _get_update_args(package_name=OCTOBOT_PACKAGE, prefer_binary=True, only_binary=False):
+    return _get_install_args(package_name=package_name,
+                             prefer_binary=prefer_binary,
+                             only_binary=only_binary) + ["-U", package_name]
 
 
-def _get_install_args(package_name=OCTOBOT_PACKAGE):
-    return ["install", package_name]
+def _get_install_args(package_name=OCTOBOT_PACKAGE, prefer_binary=True, only_binary=False):
+    return ["install", package_name,
+            "--prefer-binary" if prefer_binary and not only_binary else "",
+            f"--only-binary {package_name}" if only_binary else ""]
 
 
 def update(package_name=OCTOBOT_PACKAGE,
