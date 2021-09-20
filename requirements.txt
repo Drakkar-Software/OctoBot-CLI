@@ -1,6 +1,6 @@
 # Drakkar-Software requirements
 OctoBot-Commons>=1.5.1, <1.6
-OctoBot-Tentacles-Manager>=2.4.0, <2.5
+OctoBot-Tentacles-Manager>=2.4.0, <2.7
 
 # docker install
 docker==4.4.4
